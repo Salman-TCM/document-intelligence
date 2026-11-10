@@ -1,0 +1,78 @@
+{
+  "extractor": "rule-based (no API key set)",
+  "documents": 40,
+  "invoices": 58,
+  "success_rate": 1.0,
+  "failure_rate": 0.0,
+  "corrupted_rejected": 3,
+  "corrupted_total": 3,
+  "field_accuracy": 0.9827586206896551,
+  "per_field": {
+    "invoice_number": 1.0,
+    "invoice_date": 1.0,
+    "supplier_name": 1.0,
+    "customer_name": 0.9310344827586207,
+    "subtotal": 0.9655172413793104,
+    "tax": 0.9827586206896551,
+    "total": 0.9827586206896551,
+    "currency": 1.0,
+    "line_items": 0.896551724137931
+  },
+  "per_kind": {
+    "digital_pdf": {
+      "documents": 12,
+      "processed_ok": 12,
+      "field_accuracy": 1.0,
+      "mean_seconds": 0.0030241744165474906
+    },
+    "scanned_pdf": {
+      "documents": 8,
+      "processed_ok": 8,
+      "field_accuracy": 0.875,
+      "mean_seconds": 0.7533687301253167
+    },
+    "image": {
+      "documents": 8,
+      "processed_ok": 8,
+      "field_accuracy": 1.0,
+      "mean_seconds": 0.5299473790000775
+    },
+    "tiff": {
+      "documents": 2,
+      "processed_ok": 2,
+      "field_accuracy": 1.0,
+      "mean_seconds": 0.8868128135000006
+    },
+    "multi_invoice_pdf": {
+      "documents": 1,
+      "processed_ok": 1,
+      "field_accuracy": 1.0,
+      "mean_seconds": 0.005824289999509347
+    },
+    "excel": {
+      "documents": 3,
+      "processed_ok": 3,
+      "field_accuracy": 1.0,
+      "mean_seconds": 0.03694442333320088
+    },
+    "csv": {
+      "documents": 3,
+      "processed_ok": 3,
+      "field_accuracy": 1.0,
+      "mean_seconds": 0.006750141000035607
+    },
+    "corrupted": {
+      "documents": 3,
+      "processed_ok": 3,
+      "field_accuracy": null,
+      "mean_seconds": 0.0003839663331746124
+    }
+  },
+  "validation_recall": 1.0,
+  "validation_false_positive_rate": 0.037037037037037035,
+  "planted_errors": 4,
+  "mean_seconds_per_document": 0.3053626118750117,
+  "p95_seconds_per_document": 0.8377106460003688,
+  "total_seconds": 12.214504475000467,
+  "failures": []
+}
