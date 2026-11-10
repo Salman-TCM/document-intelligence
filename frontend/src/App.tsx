@@ -1,8 +1,9 @@
 import { useState } from "react";
 import DocumentsPage from "./components/DocumentsPage";
+import ReconcilePage from "./components/ReconcilePage";
 import SearchPage from "./components/SearchPage";
 
-type Tab = "documents" | "search";
+type Tab = "documents" | "search" | "reconcile";
 
 export default function App() {
   const [tab, setTab] = useState<Tab>("documents");
@@ -18,7 +19,7 @@ export default function App() {
       <header className="topbar">
         <h1>Document Intelligence</h1>
         <nav>
-          {(["documents", "search"] as Tab[]).map((name) => (
+          {(["documents", "search", "reconcile"] as Tab[]).map((name) => (
             <button key={name} className={tab === name ? "active" : ""} onClick={() => setTab(name)}>
               {name[0].toUpperCase() + name.slice(1)}
             </button>
@@ -28,6 +29,7 @@ export default function App() {
       <main>
         {tab === "documents" && <DocumentsPage selectedId={selectedId} onSelect={setSelectedId} />}
         {tab === "search" && <SearchPage onOpen={openDocument} />}
+        {tab === "reconcile" && <ReconcilePage />}
       </main>
     </>
   );
