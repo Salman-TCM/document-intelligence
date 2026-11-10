@@ -22,6 +22,9 @@ ENV UPLOAD_DIR=/data/uploads \
 
 # Bake the embedding model into the image so the first request doesn't download it.
 RUN python -c "from app.processing.embeddings import embed; embed('warm up')"
+# The model is in the image now. Without this, fastembed still checks Hugging Face on
+# every start and hangs when the network is slow.
+ENV HF_HUB_OFFLINE=1
 
 EXPOSE 8000
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
