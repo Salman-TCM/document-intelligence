@@ -50,6 +50,15 @@ services:
     depends_on:
       - api
 
+  # Public HTTPS URL through a Cloudflare quick tunnel (random trycloudflare.com address).
+  # Only starts with: docker compose --profile public up -d
+  tunnel:
+    image: cloudflare/cloudflared:2026.5.2
+    profiles: [public]
+    command: tunnel --no-autoupdate --url http://frontend:80
+    depends_on:
+      - frontend
+
 volumes:
   pgdata:
   uploads:

@@ -59,6 +59,25 @@ from `backend/eval/data`:
 docker compose run --rm -v ./backend:/app api python -m eval.generate_dataset
 ```
 
+### Publishing it
+
+nginx in the `frontend` container is the only entry point: it serves the UI and
+proxies `/api` and the Swagger docs (`/docs`) to the API, with per-client rate limits
+(uploads: 10 per minute) and basic security headers. To get a public HTTPS URL
+through a Cloudflare quick tunnel (no account needed):
+
+```bash
+docker compose --profile public up -d
+docker compose logs tunnel | grep trycloudflare.com    # prints the public URL
+```
+
+The address changes each time the tunnel restarts. For a fixed hostname, create a
+tunnel in the Cloudflare Zero Trust dashboard pointing at `http://frontend:80` and
+change the `tunnel` command to `tunnel --no-autoupdate run --token <your token>`.
+
+Before sharing the link, leave `ANTHROPIC_API_KEY` empty (or set a spending limit),
+otherwise anyone with the URL can use your API credits.
+
 ### Running without Docker
 
 You need Python 3.12, Node 20, Tesseract, PostgreSQL with the pgvector extension,
