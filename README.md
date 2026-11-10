@@ -15,6 +15,31 @@ Docs:
 - [Test results](docs/test-results.txt)
 - [AI prompts and AI-assisted development](docs/ai-usage.md)
 
+## Screenshots
+
+A 10-page PDF split into separate invoices, with line items:
+
+![Documents](docs/screenshots/documents.png)
+
+An invoice whose total doesn't match subtotal + tax gets flagged for review, and the
+field is highlighted:
+
+![Validation](docs/screenshots/review.png)
+
+Correcting a field that OCR couldn't read on a scanned invoice. Saving runs
+validation again and records the change in the history:
+
+![Correction](docs/screenshots/correction.png)
+
+Keyword search across all invoices (semantic search and filters are on the same page):
+
+![Search](docs/screenshots/search.png)
+
+Comparing the PDF batch with the accounts register: one total differs, and each side
+has an invoice the other doesn't:
+
+![Reconcile](docs/screenshots/reconcile.png)
+
 ## Running it
 
 You need Docker with Compose.
