@@ -153,6 +153,8 @@ the brief.
   checked as it arrives), and files saved under random names, so a user-supplied
   filename is never used as a path.
 - Optional API key (`API_KEY`), compared in constant time.
+- nginx is the only public entry point and rate-limits each client (uploads: 10 per
+  minute). It can be published through a Cloudflare tunnel, so no ports need opening.
 - All SQL goes through SQLAlchemy with bound parameters.
 - Containers run as a non-root user; Postgres and Redis are not exposed to the host.
 - Document text is passed to the LLM as data, and the prompt tells the model to
