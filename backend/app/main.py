@@ -18,6 +18,7 @@ from app.models import SEARCH_CONFIG, Document, Invoice, invoice_text_vector, ne
 from app.processing.embeddings import embed, invoice_search_text
 from app.processing.extraction import InvoiceData
 from app.processing.readers import FILE_TYPES, file_type_for
+from app.processing.reconcile import reconcile
 from app.schemas import DocumentDetail, DocumentOut, InvoiceCorrection, InvoiceOut, SearchHit, StatusOut
 from app.worker import enqueue, log_event
 
@@ -255,6 +256,16 @@ def search_invoices(
         SearchHit(invoice=InvoiceOut.model_validate(invoice), filename=filename, score=score)
         for invoice, filename, score in session.execute(query.limit(limit))
     ]
+
+
+@api.get("/reconcile")
+def reconcile_documents(left: str, right: str, session: SessionDep) -> dict:
+    """Cross-verify two documents, e.g. a PDF of invoices against an Excel register."""
+    left_doc, right_doc = get_document(session, left), get_document(session, right)
+    return reconcile(
+        [invoice.data for invoice in left_doc.invoices],
+        [invoice.data for invoice in right_doc.invoices],
+    )
 
 
 app.include_router(api)
