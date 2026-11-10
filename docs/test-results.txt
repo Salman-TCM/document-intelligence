@@ -1,0 +1,46 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.16, pytest-8.3.4, pluggy-1.7.0 -- /usr/local/bin/python3.12
+rootdir: /app
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.16.0
+collecting ... collected 36 items
+
+tests/test_api.py::test_upload_pdf_and_inspect_results PASSED            [  2%]
+tests/test_api.py::test_unsupported_file_type_is_rejected PASSED         [  5%]
+tests/test_api.py::test_oversized_upload_is_rejected PASSED              [  8%]
+tests/test_api.py::test_api_key_is_enforced_when_configured PASSED       [ 11%]
+tests/test_api.py::test_corrupted_file_fails_and_can_be_reprocessed PASSED [ 13%]
+tests/test_api.py::test_validation_errors_and_manual_correction PASSED   [ 16%]
+tests/test_api.py::test_duplicate_invoice_is_flagged PASSED              [ 19%]
+tests/test_api.py::test_keyword_and_semantic_search PASSED               [ 22%]
+tests/test_api.py::test_reconcile_pdf_against_excel_register PASSED      [ 25%]
+tests/test_extraction.py::test_rules_extract_all_labelled_fields PASSED  [ 27%]
+tests/test_extraction.py::test_rules_leave_missing_fields_empty PASSED   [ 30%]
+tests/test_extraction.py::test_rules_do_not_confuse_subtotal_with_total PASSED [ 33%]
+tests/test_extraction.py::test_llm_is_used_when_api_key_is_set PASSED    [ 36%]
+tests/test_extraction.py::test_llm_refusal_raises PASSED                 [ 38%]
+tests/test_readers.py::test_digital_pdf_is_read_without_ocr PASSED       [ 41%]
+tests/test_readers.py::test_scanned_pdf_goes_through_ocr PASSED          [ 44%]
+tests/test_readers.py::test_multi_page_pdf_is_split_per_invoice PASSED   [ 47%]
+tests/test_readers.py::test_split_pages_keeps_repeated_invoice_number_together PASSED [ 50%]
+tests/test_readers.py::test_poor_quality_image PASSED                    [ 52%]
+tests/test_readers.py::test_multi_page_tiff PASSED                       [ 55%]
+tests/test_readers.py::test_corrupted_files_raise_read_error[broken.pdf] PASSED [ 58%]
+tests/test_readers.py::test_corrupted_files_raise_read_error[broken.png] PASSED [ 61%]
+tests/test_readers.py::test_corrupted_files_raise_read_error[broken.xlsx] PASSED [ 63%]
+tests/test_readers.py::test_excel_with_register_and_free_form_sheets PASSED [ 66%]
+tests/test_readers.py::test_csv_line_items_are_grouped_by_invoice PASSED [ 69%]
+tests/test_readers.py::test_unsupported_extension PASSED                 [ 72%]
+tests/test_reconcile.py::test_reconcile_reports_differences_and_unmatched PASSED [ 75%]
+tests/test_validation.py::test_consistent_invoice_has_no_issues PASSED   [ 77%]
+tests/test_validation.py::test_missing_required_fields PASSED            [ 80%]
+tests/test_validation.py::test_total_does_not_match_subtotal_plus_tax PASSED [ 83%]
+tests/test_validation.py::test_rounding_within_tolerance_is_accepted PASSED [ 86%]
+tests/test_validation.py::test_line_items_do_not_add_up_to_subtotal PASSED [ 88%]
+tests/test_validation.py::test_line_item_quantity_times_price PASSED     [ 91%]
+tests/test_validation.py::test_negative_amount_and_bad_dates PASSED      [ 94%]
+tests/test_validation.py::test_total_checked_against_line_items_when_no_subtotal PASSED [ 97%]
+tests/test_validation.py::test_uncertain_and_duplicate_are_flagged PASSED [100%]
+
+============================== 36 passed in 7.17s ==============================
