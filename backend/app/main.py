@@ -1,23 +1,24 @@
 import hashlib
 import secrets
 from contextlib import asynccontextmanager
+from datetime import date
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, FastAPI, Header, HTTPException, Query, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
-from sqlalchemy import func, select
+from sqlalchemy import func, literal, or_, select
 from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.db import get_session, init_db
 from app.invoices import save_invoice_data
-from app.models import Document, Invoice, new_id
+from app.models import SEARCH_CONFIG, Document, Invoice, invoice_text_vector, new_id
 from app.processing.embeddings import embed, invoice_search_text
 from app.processing.extraction import InvoiceData
 from app.processing.readers import FILE_TYPES, file_type_for
-from app.schemas import DocumentDetail, DocumentOut, InvoiceCorrection, InvoiceOut, StatusOut
+from app.schemas import DocumentDetail, DocumentOut, InvoiceCorrection, InvoiceOut, SearchHit, StatusOut
 from app.worker import enqueue, log_event
 
 UPLOAD_DIR = Path(settings.upload_dir)
@@ -205,6 +206,55 @@ def correct_invoice(invoice_id: str, correction: InvoiceCorrection, session: Ses
     log_event(session, invoice.document, "corrected", f"Invoice {invoice.position + 1}: changed {', '.join(changes)}")
     session.commit()
     return invoice
+
+
+@api.get("/search")
+def search_invoices(
+    session: SessionDep,
+    q: str = "",
+    mode: Literal["keyword", "semantic"] = "keyword",
+    supplier: str | None = None,
+    needs_review: bool | None = None,
+    date_from: date | None = None,
+    date_to: date | None = None,
+    min_total: float | None = None,
+    max_total: float | None = None,
+    limit: int = Query(20, le=100),
+) -> list[SearchHit]:
+    query = select(Invoice, Document.filename).join(Document)
+
+    if supplier:
+        query = query.where(Invoice.supplier_name.ilike(f"%{supplier}%"))
+    if needs_review is not None:
+        query = query.where(Invoice.needs_review == needs_review)
+    if date_from:
+        query = query.where(Invoice.invoice_date >= date_from)
+    if date_to:
+        query = query.where(Invoice.invoice_date <= date_to)
+    if min_total is not None:
+        query = query.where(Invoice.total >= min_total)
+    if max_total is not None:
+        query = query.where(Invoice.total <= max_total)
+
+    q = q.strip()
+    if q and mode == "semantic":
+        similarity = 1 - Invoice.embedding.cosine_distance(embed(q))
+        query = query.add_columns(similarity).where(Invoice.embedding.is_not(None)).order_by(similarity.desc())
+    elif q:
+        terms = func.websearch_to_tsquery(SEARCH_CONFIG, q)
+        rank = func.ts_rank(invoice_text_vector, terms)
+        query = (
+            query.add_columns(rank)
+            .where(or_(invoice_text_vector.op("@@")(terms), Invoice.invoice_number.ilike(f"%{q}%")))
+            .order_by(rank.desc())
+        )
+    else:
+        query = query.add_columns(literal(None)).order_by(Invoice.created_at.desc())
+
+    return [
+        SearchHit(invoice=InvoiceOut.model_validate(invoice), filename=filename, score=score)
+        for invoice, filename, score in session.execute(query.limit(limit))
+    ]
 
 
 app.include_router(api)
